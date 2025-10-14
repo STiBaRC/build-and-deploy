@@ -1,0 +1,37 @@
+name: Build and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        required: true
+        type: string
+      dev_deployment_name:
+        required: true
+        type: string
+      dev_deployment_yaml:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: kube-prod-gha-runner
+    steps:
+      - uses: actions/checkout
+      - name: Build Docker image
+        run: |
+          TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
+          docker build -t registry.stibarc.com/${{ inputs.image_name }}:$TAG .
+          docker tag registry.stibarc.com/${{ inputs.image_name }}:$TAG registry.stibarc.com/${{ inputs.image_name }}:latest
+          echo "Docker image built with tag: $TAG"
+      - name: Push Docker image
+        run: |
+          TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
+          docker push registry.stibarc.com/${{ inputs.image_name }}:$TAG
+          echo "Docker image pushed with tag: $TAG"
+      - name: Deploy dev to Kubernetes
+        run: |
+          TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
+          kubectl apply -f ${{ inputs.dev_deployment_yaml }}
+          kubectl set image deployment/${{ inputs.dev_deployment_name }} ${{ inputs.dev_deployment_name }}=registry.stibarc.com/${{ inputs.image_name }}:$TAG
+          echo "Deployment updated to use image with tag: $TAG"
