@@ -45,3 +45,13 @@ jobs:
           kubectl apply -f ${{ inputs.dev_deployment_yaml }}
           kubectl set image deployment/${{ inputs.dev_deployment_name }} ${{ inputs.dev_deployment_name }}=registryint.stibarc.com/${{ inputs.image_name }}:$TAG
           echo "Deployment updated to use image with tag: $TAG"
+  cleanup:
+    name: Cleanup
+    runs-on: kube-prod-gha-runner
+    needs: deploy
+    steps:
+      - name: Clean up Docker image locally
+        run: |
+          TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
+          docker rmi registryint.stibarc.com/${{ inputs.image_name }}:$TAG
+          docker rmi registryint.stibarc.com/${{ inputs.image_name }}:latest
