@@ -19,6 +19,7 @@ on:
 
 jobs:
   build:
+    name: Build and push
     runs-on: kube-prod-gha-runner
     steps:
       - uses: actions/checkout@v5
@@ -33,6 +34,10 @@ jobs:
           TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
           docker push registryint.stibarc.com/${{ inputs.image_name }}:$TAG
           echo "Docker image pushed with tag: $TAG"
+  deploy:
+    name: Deploy
+    runs-on: kube-prod-gha-runner
+    steps:
       - name: Deploy dev to Kubernetes
         run: |
           TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
