@@ -37,6 +37,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: kube-prod-gha-runner
+    needs: build
     steps:
       - name: Deploy dev to Kubernetes
         run: |
