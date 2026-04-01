@@ -33,6 +33,7 @@ jobs:
         run: |
           TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
           docker push registryint.stibarc.com/${{ inputs.image_name }}:$TAG
+          docker push registryint.stibarc.com/${{ inputs.image_name }}:latest
           echo "Docker image pushed with tag: $TAG"
   deploy:
     name: Deploy
