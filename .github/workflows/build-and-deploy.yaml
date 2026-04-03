@@ -26,7 +26,7 @@ jobs:
       - name: Build Docker image
         run: |
           TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
-          docker build -t registryint.stibarc.com/${{ inputs.image_name }}:$TAG -f ${{ inputs.dockerfile }} .
+          docker build --no-cache -t registryint.stibarc.com/${{ inputs.image_name }}:$TAG -f ${{ inputs.dockerfile }} .
           docker tag registryint.stibarc.com/${{ inputs.image_name }}:$TAG registryint.stibarc.com/${{ inputs.image_name }}:latest
           echo "Docker image built with tag: $TAG"
       - name: Push Docker image
@@ -56,3 +56,4 @@ jobs:
           TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
           docker rmi registryint.stibarc.com/${{ inputs.image_name }}:$TAG
           docker rmi registryint.stibarc.com/${{ inputs.image_name }}:latest
+          yes y | docker system prune -a
