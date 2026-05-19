@@ -22,7 +22,7 @@ jobs:
     name: Build and push
     runs-on: kube-prod-gha-runner
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Docker image
         run: |
           TAG=$(date +'%Y-%m-%d')-run_${{ github.run_number }}
